@@ -1,1 +1,8 @@
-{ "name": "NotesFaérie", "short_name": "Notes", "start_url": ".", "display": "standalone", "background_color": "#E9EEE8", "theme_color": "#35634A" }
+{
+  "name": "NotesFaérie",
+  "short_name": "Notes",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#6B9EB0",
+  "theme_color": "#6B9EB0"
+}

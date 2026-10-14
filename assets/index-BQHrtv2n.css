@@ -282,3 +282,17 @@ input, select, textarea {
   color: #ffffff;
   border-color: var(--moss);
 }
+
+/* Style des liens détectés automatiquement */
+a.link-auto {
+  color: #0284c7;
+  font-weight: 600;
+  text-decoration: underline;
+  word-break: break-all; /* Évite que les longues URL ne dépassent de la carte */
+  transition: color 0.2s ease;
+}
+
+a.link-auto:hover {
+  color: #0369a1;
+  text-decoration: none;
+}

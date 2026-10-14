@@ -12,20 +12,24 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <title>NotesFaérie</title>
   <script type="module" crossorigin src="./assets/index-BH16Lvmw.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-BQHrtv2n.css">
+  <link rel="stylesheet" crossorigin href="./assets/index-BQHrtv2n.css?v=3">
 </head>
 <body>
   <div id="root"></div>
 
   <script>
     window.addEventListener('load', function() {
+      // Expression régulière pour détecter les URL (http://, https://)
+      var urlRegex = /(https?:\/\/[^\s<]+)/g;
+
       var observer = new MutationObserver(function() {
+        // 1. Inserer le bouton MémoTâches dans le header
         var header = document.querySelector('header');
         if (header && !document.querySelector('.btn-memonotes')) {
           var link = document.createElement('a');
           link.href = 'https://faerieorga.github.io/memonotes/';
           link.className = 'btn-memonotes';
-          link.innerHTML = '📖 MémoTâches';
+          link.innerHTML = '📋 MémoTâches';
           
           var h1 = header.querySelector('h1');
           if (h1) {
@@ -34,7 +38,20 @@
             header.appendChild(link);
           }
         }
+
+        // 2. Transformer les liens bruts dans les descriptions de cartes en véritables liens cliquables
+        var descriptions = document.querySelectorAll('.desc, .ligne, .note');
+        descriptions.forEach(function(el) {
+          if (!el.dataset.linksConverted && el.innerHTML.match(urlRegex)) {
+            // Remplace les URL brutes par une balise <a href="..." target="_blank">
+            el.innerHTML = el.innerHTML.replace(urlRegex, function(url) {
+              return '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="link-auto">' + url + '</a>';
+            });
+            el.dataset.linksConverted = "true";
+          }
+        });
       });
+
       observer.observe(document.body, { childList: true, subtree: true });
     });
   </script>

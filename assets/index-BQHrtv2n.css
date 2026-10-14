@@ -295,3 +295,29 @@ input::placeholder, textarea::placeholder {
   top: 0; right: 0; bottom: 0; left: 0;
   background: rgba(5, 8, 15, 0.8);
   backdrop-filter:
+
+    /* Style du bouton MémoNotes dans le header */
+.btn-memonotes {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--line);
+  color: #a5b4fc;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  margin-left: 8px;
+}
+
+.btn-memonotes:hover {
+  background: var(--moss);
+  color: #ffffff;
+  border-color: var(--moss);
+  box-shadow: var(--glow);
+  transform: translateY(-1px);
+}

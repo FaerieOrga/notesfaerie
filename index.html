@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#35634A" />
+<meta name="theme-color" content="#0d1322" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <link rel="manifest" href="./manifest.webmanifest" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet" />
@@ -13,5 +14,32 @@
   <script type="module" crossorigin src="./assets/index-BH16Lvmw.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-BQHrtv2n.css">
 </head>
-<body><div id="root"></div></body>
+<body>
+  <div id="root"></div>
+
+  <!-- Script pour injecter le bouton MémoNotes dans le header React -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const observer = new MutationObserver(() => {
+        const header = document.querySelector('header');
+        if (header && !document.querySelector('.btn-memonotes')) {
+          const link = document.createElement('a');
+          link.href = 'https://faerieorga.github.io/memonotes/';
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.className = 'btn-memonotes';
+          link.innerHTML = '📖 MémoNotes';
+          
+          const h1 = header.querySelector('h1');
+          if (h1) {
+            h1.after(link);
+          } else {
+            header.appendChild(link);
+          }
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    });
+  </script>
+</body>
 </html>

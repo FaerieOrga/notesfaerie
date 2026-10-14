@@ -1,23 +1,42 @@
-<!-- Script pour injecter le bouton MémoNotes dans le même onglet -->
-<script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const observer = new MutationObserver(() => {
-      const header = document.querySelector('header');
-      if (header && !document.querySelector('.btn-memonotes')) {
-        const link = document.createElement('a');
-        link.href = 'https://faerieorga.github.io/memonotes/';
-        // Pas de target="_blank" ici pour rester sur le même onglet
-        link.className = 'btn-memonotes';
-        link.innerHTML = '📖 MémoTâches';
-        
-        const h1 = header.querySelector('h1');
-        if (h1) {
-          h1.after(link);
-        } else {
-          header.appendChild(link);
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#6B9EB0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <title>NotesFaérie</title>
+  <script type="module" crossorigin src="./assets/index-BH16Lvmw.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BQHrtv2n.css">
+</head>
+<body>
+  <div id="root"></div>
+
+  <script>
+    window.addEventListener('load', function() {
+      var observer = new MutationObserver(function() {
+        var header = document.querySelector('header');
+        if (header && !document.querySelector('.btn-memonotes')) {
+          var link = document.createElement('a');
+          link.href = 'https://faerieorga.github.io/memonotes/';
+          link.className = 'btn-memonotes';
+          link.innerHTML = '📖 MémoNotes';
+          
+          var h1 = header.querySelector('h1');
+          if (h1) {
+            h1.after(link);
+          } else {
+            header.appendChild(link);
+          }
         }
-      }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
     });
-    observer.observe(document.body, { childList: true, subtree: true });
-  });
-</script>
+  </script>
+</body>
+</html>

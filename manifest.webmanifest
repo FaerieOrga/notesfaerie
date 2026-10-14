@@ -1,8 +1,1 @@
-{
-  "name": "NotesFaérie",
-  "short_name": "Notes",
-  "start_url": ".",
-  "display": "standalone",
-  "background_color": "#0d1322",
-  "theme_color": "#0d1322"
-}
+{ "name": "NotesFaérie", "short_name": "Notes", "start_url": ".", "display": "standalone", "background_color": "#E9EEE8", "theme_color": "#35634A" }

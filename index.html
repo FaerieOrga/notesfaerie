@@ -20,12 +20,16 @@
 <style>
   .nf-barre { display: flex; gap: 6px; margin-top: 4px; }
   .nf-barre button { min-height: 36px; min-width: 40px; padding: 0 10px; }
-</style>
-<style>
-  .nf-barre { display: flex; gap: 6px; margin-top: 4px; }
-  .nf-barre button { min-height: 36px; min-width: 40px; padding: 0 10px; }
   .nf-fait { color: var(--mute); text-decoration: line-through; }
+  .fiche textarea {
+    min-height: clamp(220px, 40dvh, 480px);
+    resize: vertical;
+  }
+  @media (min-width: 700px) {
+    .fiche { max-width: 900px; }
+  }
 </style>
+  
 <script>
   window.addEventListener('load', function() {
     function esc(s) {

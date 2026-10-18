@@ -70,7 +70,7 @@
       var lignes = v.slice(d, f).split('\n');
       var etat = lignes[0].indexOf('\u2610 ') === 0 ? 1 : lignes[0].indexOf('\u2611 ') === 0 ? 2 : 0;
       var out = lignes.map(function(l) {
-        var nu = l.replace(/^[\u2610\u2611] /, '');
+        var nu = l.replace(/^([\u2610\u2611]|-) /, '');
         return etat === 0 ? '\u2610 ' + nu : etat === 1 ? '\u2611 ' + nu : nu;
       }).join('\n');
       majTexte(ta, v.slice(0, d) + out + v.slice(f), d, d + out.length);
@@ -91,6 +91,16 @@
         majTexte(ta, v.slice(0, p) + '\n\u2610 ' + v.slice(p), p + 3, p + 3);
       }
     }
+
+function toucheCase(ta) {
+  var v = ta.value, p = ta.selectionStart;
+  if (p !== ta.selectionEnd) return;
+  var d = v.lastIndexOf('\n', p - 1) + 1;
+  if (p > d + 1 || !/^[\u2610\u2611] /.test(v.slice(d, d + 2))) return;
+  var n = v.charAt(d) === '\u2610' ? '\u2611' : '\u2610';
+  majTexte(ta, v.slice(0, d) + n + v.slice(d + 1), d + 2, d + 2);
+}
+    
     function barre() {
       document.querySelectorAll('.fiche textarea').forEach(function(ta) {
         var prev = ta.previousElementSibling;
@@ -110,6 +120,7 @@
         });
         ta.before(bar);
         ta.addEventListener('keydown', entree);
+        ta.addEventListener('click', function() { toucheCase(ta); });
       });
     }
 

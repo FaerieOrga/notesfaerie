@@ -21,6 +21,11 @@
   .nf-barre { display: flex; gap: 6px; margin-top: 4px; }
   .nf-barre button { min-height: 36px; min-width: 40px; padding: 0 10px; }
 </style>
+<style>
+  .nf-barre { display: flex; gap: 6px; margin-top: 4px; }
+  .nf-barre button { min-height: 36px; min-width: 40px; padding: 0 10px; }
+  .nf-fait { color: var(--mute); text-decoration: line-through; }
+</style>
 <script>
   window.addEventListener('load', function() {
     function esc(s) {
@@ -33,20 +38,58 @@
         .replace(/~~(.+?)~~/g, '<s>$1</s>')
         .replace(/\*([^*\s](?:[^*]*[^*\s])?)\*/g, '<i>$1</i>');
     }
-    function rendre(texte) {
-      return texte.split(/(https?:\/\/[^\s"'<>]+)/).map(function(p, i) {
+    function rendreLigne(l) {
+      var h = l.split(/(https?:\/\/[^\s"'<>]+)/).map(function(p, i) {
         return i % 2
           ? '<a href="' + esc(p) + '" target="_blank" rel="noopener noreferrer" class="link-auto">' + esc(p) + '</a>'
           : fmt(esc(p));
       }).join('');
+      return l.indexOf('\u2611 ') === 0 ? '<span class="nf-fait">' + h + '</span>' : h;
+    }
+    function rendre(texte) {
+      return texte.split('\n').map(rendreLigne).join('\n');
+    }
+
+    // --- Édition dans la fiche ---
+    var setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set;
+    function majTexte(ta, nv, a, b) {
+      setter.call(ta, nv);
+      ta.dispatchEvent(new Event('input', { bubbles: true }));
+      ta.focus();
+      ta.setSelectionRange(a, b);
     }
     function entourer(ta, m) {
       var a = ta.selectionStart, b = ta.selectionEnd, v = ta.value;
-      var nv = v.slice(0, a) + m + v.slice(a, b) + m + v.slice(b);
-      Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set.call(ta, nv);
-      ta.dispatchEvent(new Event('input', { bubbles: true }));
-      ta.focus();
-      ta.setSelectionRange(a + m.length, b + m.length);
+      majTexte(ta, v.slice(0, a) + m + v.slice(a, b) + m + v.slice(b), a + m.length, b + m.length);
+    }
+    function cases(ta) {
+      var v = ta.value;
+      var d = v.lastIndexOf('\n', ta.selectionStart - 1) + 1;
+      var f = v.indexOf('\n', ta.selectionEnd);
+      if (f < 0) f = v.length;
+      var lignes = v.slice(d, f).split('\n');
+      var etat = lignes[0].indexOf('\u2610 ') === 0 ? 1 : lignes[0].indexOf('\u2611 ') === 0 ? 2 : 0;
+      var out = lignes.map(function(l) {
+        var nu = l.replace(/^[\u2610\u2611] /, '');
+        return etat === 0 ? '\u2610 ' + nu : etat === 1 ? '\u2611 ' + nu : nu;
+      }).join('\n');
+      majTexte(ta, v.slice(0, d) + out + v.slice(f), d, d + out.length);
+    }
+    function entree(e) {
+      if (e.key !== 'Enter' || e.shiftKey || e.isComposing) return;
+      var ta = e.target, v = ta.value, p = ta.selectionStart;
+      if (p !== ta.selectionEnd) return;
+      var d = v.lastIndexOf('\n', p - 1) + 1;
+      var f = v.indexOf('\n', p);
+      if (f < 0) f = v.length;
+      var ligne = v.slice(d, f);
+      if (!/^[\u2610\u2611] /.test(ligne)) return;
+      e.preventDefault();
+      if (/^[\u2610\u2611] ?$/.test(ligne)) {
+        majTexte(ta, v.slice(0, d) + v.slice(f), d, d);
+      } else {
+        majTexte(ta, v.slice(0, p) + '\n\u2610 ' + v.slice(p), p + 3, p + 3);
+      }
     }
     function barre() {
       document.querySelectorAll('.fiche textarea').forEach(function(ta) {
@@ -55,16 +98,18 @@
         var bar = document.createElement('div');
         bar.className = 'nf-barre';
         [['<b>G</b>', '**', 'Gras'], ['<i>I</i>', '*', 'Italique'],
-         ['<u>S</u>', '__', 'Souligné'], ['<s>B</s>', '~~', 'Barré']].forEach(function(d) {
+         ['<u>S</u>', '__', 'Souligné'], ['<s>B</s>', '~~', 'Barré'],
+         ['\u2610', null, 'Case à cocher']].forEach(function(d) {
           var btn = document.createElement('button');
           btn.type = 'button';
           btn.title = d[2];
           btn.innerHTML = d[0];
           btn.addEventListener('mousedown', function(e) { e.preventDefault(); });
-          btn.addEventListener('click', function() { entourer(ta, d[1]); });
+          btn.addEventListener('click', function() { d[1] ? entourer(ta, d[1]) : cases(ta); });
           bar.appendChild(btn);
         });
         ta.before(bar);
+        ta.addEventListener('keydown', entree);
       });
     }
 
@@ -80,9 +125,10 @@
         if (h1) { h1.after(link); } else { header.appendChild(link); }
       }
 
-      // 2. Mise en forme + liens cliquables dans les descriptions
+      // 2. Mise en forme, cases et liens cliquables dans les descriptions
       document.querySelectorAll('.desc, .note').forEach(function(el) {
         var t = el.textContent;
+        if (/[\u2610\u2611] /.test(t)) el.style.webkitLineClamp = '10';
         if (el.dataset.nfOut === t) return;
         var h = rendre(t);
         if (h === esc(t)) return;

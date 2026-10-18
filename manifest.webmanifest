@@ -1,6 +1,6 @@
 {
-  "name": "NotesFaérie",
-  "short_name": "Notes",
+  "name": "Journal de bord",
+"short_name": "JdB",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#6B9EB0",

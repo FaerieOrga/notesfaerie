@@ -10,17 +10,62 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <title>NotesFaérie</title>
+  <title>Journal de bord</title>
   <script type="module" crossorigin src="./assets/index-BH16Lvmw.js?v=3"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-BQHrtv2n.css?v=3">
 </head>
 <body>
   <div id="root"></div>
 
+<style>
+  .nf-barre { display: flex; gap: 6px; margin-top: 4px; }
+  .nf-barre button { min-height: 36px; min-width: 40px; padding: 0 10px; }
+</style>
 <script>
   window.addEventListener('load', function() {
     function esc(s) {
       return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function fmt(s) {
+      return s
+        .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+        .replace(/__(.+?)__/g, '<u>$1</u>')
+        .replace(/~~(.+?)~~/g, '<s>$1</s>')
+        .replace(/\*([^*\s](?:[^*]*[^*\s])?)\*/g, '<i>$1</i>');
+    }
+    function rendre(texte) {
+      return texte.split(/(https?:\/\/[^\s"'<>]+)/).map(function(p, i) {
+        return i % 2
+          ? '<a href="' + esc(p) + '" target="_blank" rel="noopener noreferrer" class="link-auto">' + esc(p) + '</a>'
+          : fmt(esc(p));
+      }).join('');
+    }
+    function entourer(ta, m) {
+      var a = ta.selectionStart, b = ta.selectionEnd, v = ta.value;
+      var nv = v.slice(0, a) + m + v.slice(a, b) + m + v.slice(b);
+      Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value').set.call(ta, nv);
+      ta.dispatchEvent(new Event('input', { bubbles: true }));
+      ta.focus();
+      ta.setSelectionRange(a + m.length, b + m.length);
+    }
+    function barre() {
+      document.querySelectorAll('.fiche textarea').forEach(function(ta) {
+        var prev = ta.previousElementSibling;
+        if (prev && prev.classList.contains('nf-barre')) return;
+        var bar = document.createElement('div');
+        bar.className = 'nf-barre';
+        [['<b>G</b>', '**', 'Gras'], ['<i>I</i>', '*', 'Italique'],
+         ['<u>S</u>', '__', 'Souligné'], ['<s>B</s>', '~~', 'Barré']].forEach(function(d) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.title = d[2];
+          btn.innerHTML = d[0];
+          btn.addEventListener('mousedown', function(e) { e.preventDefault(); });
+          btn.addEventListener('click', function() { entourer(ta, d[1]); });
+          bar.appendChild(btn);
+        });
+        ta.before(bar);
+      });
     }
 
     var observer = new MutationObserver(function() {
@@ -35,22 +80,22 @@
         if (h1) { h1.after(link); } else { header.appendChild(link); }
       }
 
-      // 2. Liens cliquables dans les descriptions (une seule fois par élément)
+      // 2. Mise en forme + liens cliquables dans les descriptions
       document.querySelectorAll('.desc, .note').forEach(function(el) {
-        if (el.querySelector('a.link-auto')) return;
-        var texte = el.textContent;
-        if (!/https?:\/\//.test(texte)) return;
-        var parts = texte.split(/(https?:\/\/[^\s"'<>]+)/);
-        el.innerHTML = parts.map(function(p, i) {
-          return i % 2
-            ? '<a href="' + esc(p) + '" target="_blank" rel="noopener noreferrer" class="link-auto">' + esc(p) + '</a>'
-            : esc(p);
-        }).join('');
+        var t = el.textContent;
+        if (el.dataset.nfOut === t) return;
+        var h = rendre(t);
+        if (h === esc(t)) return;
+        el.innerHTML = h;
+        el.dataset.nfOut = el.textContent;
       });
+
+      // 3. Boutons de mise en forme dans la fiche
+      barre();
     });
     observer.observe(document.body, { childList: true, subtree: true });
 
-    // 3. Un clic sur un lien l'ouvre sans ouvrir la fiche de la note
+    // 4. Un clic sur un lien l'ouvre sans ouvrir la fiche de la note
     document.addEventListener('click', function(e) {
       var a = e.target.closest && e.target.closest('a.link-auto');
       if (!a) return;

@@ -17,43 +17,48 @@
 <body>
   <div id="root"></div>
 
-  <script>
-    window.addEventListener('load', function() {
-      // Expression régulière pour détecter les URL (http://, https://)
-      var urlRegex = /(https?:\/\/[^\s<]+)/g;
+<script>
+  window.addEventListener('load', function() {
+    function esc(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
 
-      var observer = new MutationObserver(function() {
-        // 1. Inserer le bouton MémoTâches dans le header
-        var header = document.querySelector('header');
-        if (header && !document.querySelector('.btn-memonotes')) {
-          var link = document.createElement('a');
-          link.href = 'https://faerieorga.github.io/memonotes/';
-          link.className = 'btn-memonotes';
-          link.innerHTML = '📋 MémoTâches';
-          
-          var h1 = header.querySelector('h1');
-          if (h1) {
-            h1.after(link);
-          } else {
-            header.appendChild(link);
-          }
-        }
+    var observer = new MutationObserver(function() {
+      // 1. Bouton MémoTâches dans le header
+      var header = document.querySelector('header');
+      if (header && !document.querySelector('.btn-memonotes')) {
+        var link = document.createElement('a');
+        link.href = 'https://faerieorga.github.io/memonotes/';
+        link.className = 'btn-memonotes';
+        link.innerHTML = '📋 MémoTâches';
+        var h1 = header.querySelector('h1');
+        if (h1) { h1.after(link); } else { header.appendChild(link); }
+      }
 
-        // 2. Transformer les liens bruts dans les descriptions de cartes en véritables liens cliquables
-        var descriptions = document.querySelectorAll('.desc, .ligne, .note');
-        descriptions.forEach(function(el) {
-          if (!el.dataset.linksConverted && el.innerHTML.match(urlRegex)) {
-            // Remplace les URL brutes par une balise <a href="..." target="_blank">
-            el.innerHTML = el.innerHTML.replace(urlRegex, function(url) {
-              return '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="link-auto">' + url + '</a>';
-            });
-            el.dataset.linksConverted = "true";
-          }
-        });
+      // 2. Liens cliquables dans les descriptions (une seule fois par élément)
+      document.querySelectorAll('.desc, .note').forEach(function(el) {
+        if (el.querySelector('a.link-auto')) return;
+        var texte = el.textContent;
+        if (!/https?:\/\//.test(texte)) return;
+        var parts = texte.split(/(https?:\/\/[^\s"'<>]+)/);
+        el.innerHTML = parts.map(function(p, i) {
+          return i % 2
+            ? '<a href="' + esc(p) + '" target="_blank" rel="noopener noreferrer" class="link-auto">' + esc(p) + '</a>'
+            : esc(p);
+        }).join('');
       });
-
-      observer.observe(document.body, { childList: true, subtree: true });
     });
-  </script>
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // 3. Un clic sur un lien l'ouvre sans ouvrir la fiche de la note
+    document.addEventListener('click', function(e) {
+      var a = e.target.closest && e.target.closest('a.link-auto');
+      if (!a) return;
+      e.preventDefault();
+      e.stopPropagation();
+      window.open(a.href, '_blank', 'noopener');
+    }, true);
+  });
+</script>
 </body>
 </html>

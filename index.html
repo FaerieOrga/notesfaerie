@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <title>Journal de bord</title>
-  <script type="module" crossorigin src="./assets/index-BH16Lvmw.js?v=8"></script>
+  <script type="module" crossorigin src="./assets/index-BH16Lvmw.js?v=9"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-BQHrtv2n.css?v=3">
 </head>
 <body>
@@ -40,6 +40,22 @@ header .ghost { margin-left: auto; }
 
 /* Cartes des notes : marge à gauche et à droite */
 .liste { padding: 0 16px; border-top: 0; }
+
+  /* Fond dégradé comme MémoTâches */
+:root { --bg: #5E9AA5; }
+html { background: #B5DADB; }
+body { background: transparent; }
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, #5E9AA5 0%, #8DBCC3 45%, #C0E3E2 100%);
+}
+
+/* Lisibilité sur le bas, plus clair */
+.vide { color: var(--ink); }
+.liste li { box-shadow: 0 1px 4px rgba(27, 38, 32, 0.15); }
 </style>
   
 <script>

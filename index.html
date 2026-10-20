@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <title>Journal de bord</title>
-  <script type="module" crossorigin src="./assets/index-BH16Lvmw.js?v=7"></script>
+  <script type="module" crossorigin src="./assets/index-BH16Lvmw.js?v=8"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-BQHrtv2n.css?v=3">
 </head>
 <body>
@@ -28,6 +28,18 @@
   @media (min-width: 700px) {
     .fiche { max-width: 900px; }
   }
+
+  /* En-tête : titre sur sa propre ligne, boutons dessous */
+header { flex-wrap: wrap; row-gap: 8px; }
+header h1 { flex: 1 1 100%; }
+.btn-memonotes { margin-left: 0; }
+header .ghost { margin-left: auto; }
+
+/* Onglets des sujets : tous visibles, sur plusieurs lignes */
+.chips { flex-wrap: wrap; overflow-x: visible; gap: 8px; }
+
+/* Cartes des notes : marge à gauche et à droite */
+.liste { padding: 0 16px; border-top: 0; }
 </style>
   
 <script>

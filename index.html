@@ -158,15 +158,21 @@ function toucheCase(ta) {
     }
 
     var observer = new MutationObserver(function() {
-      // 1. Bouton MémoTâches dans le header
+           // 1. Boutons MémoTâches et MémoNotes dans le header
       var header = document.querySelector('header');
       if (header && !document.querySelector('.btn-memonotes')) {
-        var link = document.createElement('a');
-        link.href = 'https://faerieorga.github.io/memonotes/';
-        link.className = 'btn-memonotes';
-        link.innerHTML = '📋 MémoTâches';
-        var h1 = header.querySelector('h1');
-        if (h1) { h1.after(link); } else { header.appendChild(link); }
+        var ref = header.querySelector('h1');
+        [
+          ['📋 MémoTâches', 'https://faerieorga.github.io/memonotes/'],
+          ['📝 MémoNotes', 'https://faerieorga.github.io/memonotes/#notes']
+        ].forEach(function(l) {
+          var a = document.createElement('a');
+          a.href = l[1];
+          a.className = 'btn-memonotes';
+          a.innerHTML = l[0];
+          if (ref) { ref.after(a); } else { header.appendChild(a); }
+          ref = a;
+        });
       }
 
       // 2. Mise en forme, cases et liens cliquables dans les descriptions

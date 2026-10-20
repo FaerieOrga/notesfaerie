@@ -60,6 +60,13 @@ body::before {
 
 /* Bouton + : aligné sur le bord droit des notes (ordinateur) */
 .fab { right: max(18px, calc((100vw - 720px) / 2 - 76px)); }
+
+@media (max-width: 600px) {
+  header { gap: 6px; }
+  .btn-memonotes { padding: 4px 10px; font-size: 13px; }
+    header .ghost { font-size: 13px; padding: 0 4px; min-height: 36px; }
+}
+  
 </style>
   
 <script>

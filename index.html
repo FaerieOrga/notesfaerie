@@ -70,6 +70,12 @@ body::before {
 .recherche { display: flex; gap: 8px; align-items: flex-start; }
 .recherche input { flex: 1; min-width: 0; }
 .recherche select { width: auto; max-width: 46%; margin-top: 6px; }
+
+  @media (max-width: 600px) {
+  .recherche { flex-wrap: wrap; }
+  .recherche input { flex: 1 1 100%; }
+  .recherche select { flex: 1 1 0; max-width: none; margin-top: 0; }
+}
   
 </style>
   
